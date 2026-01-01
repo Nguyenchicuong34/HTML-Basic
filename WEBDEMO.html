@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuong Tech Store - Giáng Sinh An Lành</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- RESET & GLOBAL --- */
+        :root {
+            --primary-color: #D70018;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); overflow-x: hidden; position: relative; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- UTILITIES --- */
+        .container { width: 1200px; max-width: 95%; margin: 0 auto; }
+        .flex { display: flex; align-items: center; }
+        .hidden { display: none; }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(215, 0, 24, 0.3);
+            transition: background 0.5s;
+        }
+
+        .header-inner { justify-content: space-between; }
+        
+        .logo { font-size: 22px; font-weight: 800; gap: 10px; text-transform: uppercase; cursor: pointer; }
+        .logo i { font-size: 26px; animation: spin 10s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .search-box {
+            flex-grow: 1;
+            margin: 0 30px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+        }
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .header-actions { gap: 25px; }
+        .action-item {
+            flex-direction: column;
+            font-size: 11px;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+        }
+        .action-item i { font-size: 20px; margin-bottom: 4px; border: 1px solid rgba(255,255,255,0.5); padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
+        .action-item:hover i { background: white; color: var(--primary-color); }
+        
+        /* Cart Badge */
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: yellow;
+            color: red;
+            font-weight: bold;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid red;
+        }
+
+        /* --- LAYOUT GRID --- */
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 220px 1fr 280px;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar { background: white; border-radius: 8px; overflow: hidden; height: fit-content; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .sidebar li {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 14px;
+            color: #444;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar li:hover { background: #ffebee; color: var(--primary-color); padding-left: 20px; }
+        .sidebar li:last-child { border: none; }
+
+        /* --- HERO SLIDER --- */
+        .hero-section {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .slider-container {
+            position: relative;
+            height: 320px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffd1dc 0%, #fff0f5 100%);
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none; /* Disable click on hidden slides */
+        }
+        .slide.active { opacity: 1; pointer-events: all; z-index: 2; }
+
+        .slide-content { max-width: 60%; z-index: 5; }
+        .slide-title { font-size: 32px; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; line-height: 1.2; text-shadow: 2px 2px 4px rgba(255,255,255,0.8); }
+        .slide-price { font-size: 38px; font-weight: 800; color: #2c3e50; margin: 10px 0; }
+        .slide-desc { font-size: 14px; color: #555; margin-bottom: 20px; }
+        
+        .btn-buy {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .btn-buy:active { transform: scale(0.95); }
+
+        .slide-img {
+            max-width: 250px;
+            transform: rotate(-10deg);
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(-10deg); } 50% { transform: translateY(-10px) rotate(-10deg); } }
+
+        /* Slider Controls */
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            z-index: 10;
+            padding: 0 10px;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.5);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: #333;
+            transition: 0.3s;
+        }
+        .nav-btn:hover { background: white; color: var(--primary-color); }
+
+        /* Countdown Timer */
+        .flash-sale-bar {
+            background: #ffeb3b;
+            padding: 8px 15px;
+            font-weight: bold;
+            color: #d00000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        .timer-box span { background: #333; color: white; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+
+        /* --- RIGHT BANNERS --- */
+        .right-banners { display: flex; flex-direction: column; gap: 10px; }
+        .banner-box {
+            flex: 1;
+            border-radius: 8px;
+            padding: 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .banner-box:hover { transform: translateX(-5px); }
+        .b-blue { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .b-purple { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .b-dark { background: linear-gradient(135deg, #434343, #000000); }
+        .banner-box img { position: absolute; right: 5px; bottom: 5px; height: 80px; transform: rotate(-15deg); opacity: 0.8; transition: 0.3s; }
+        .banner-box:hover img { transform: scale(1.1) rotate(-15deg); opacity: 1; }
+
+        /* --- TOAST NOTIFICATION --- */
+        .toast-container { position: fixed; top: 80px; right: 20px; z-index: 9999; }
+        .toast {
+            background: white;
+            border-left: 5px solid #28a745;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.5s ease;
+            min-width: 250px;
+        }
+        .toast.error { border-left-color: #dc3545; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* --- SNOW EFFECT --- */
+        .snowflake { position: fixed; top: -10px; color: #fff; user-select: none; pointer-events: none; z-index: 9999; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 992px) {
+            .container { width: 100%; padding: 0 10px; }
+            .main-wrapper { grid-template-columns: 1fr; }
+            .sidebar, .right-banners { display: none; } /* Ẩn bớt trên mobile cho gọn */
+            .header-inner .location-btn { display: none; }
+            .logo span { display: none; } /* Ẩn chữ logo trên mobile nhỏ */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toast-container" id="toastArea"></div>
+
+    <header>
+        <div class="container flex header-inner">
+            <div class="logo flex" onclick="location.reload()">
+                <i class="fab fa-battle-net"></i>
+                <span>Cuong Tech Store</span>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Bạn tìm gì hôm nay? (VD: iPhone 15)...">
+                <button class="search-btn" onclick="handleSearch()"><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="header-actions flex">
+                <div class="action-item flex" onclick="showToast('Tính năng đang bảo trì', 'error')">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>Gọi mua</span>
+                </div>
+                <div class="action-item flex" onclick="showToast('Chưa có sản phẩm nào để tra cứu', 'error')">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Tra cứu</span>
+                </div>
+                <div class="action-item flex" onclick="showCart()">
+                    <div style="position: relative;">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+                    <span>Giỏ hàng</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-wrapper">
+            <aside class="sidebar">
+                <ul>
+                    <li onclick="filterProduct('Xiaomi')"><i class="fas fa-mobile-alt"></i> Xiaomi</li>
+                    <li onclick="filterProduct('Realme')"><i class="fas fa-bolt"></i> Realme</li>
+                    <li onclick="filterProduct('Apple')"><i class="fab fa-apple"></i> iPhone / iPad</li>
+                    <li onclick="filterProduct('Samsung')"><i class="fab fa-android"></i> Samsung</li>
+                    <li onclick="filterProduct('Gaming')"><i class="fas fa-gamepad"></i> Gaming Phone</li>
+                    <li onclick="filterProduct('PC')"><i class="fas fa-laptop"></i> Laptop / PC</li>
+                    <li onclick="filterProduct('Accessory')"><i class="fas fa-headphones"></i> Phụ kiện</li>
+                    <li onclick="filterProduct('Sim')"><i class="fas fa-sim-card"></i> Sim Số Đẹp</li>
+                </ul>
+            </aside>
+
+            <section class="hero-section">
+                <div class="flash-sale-bar">
+                    <i class="fas fa-bolt"></i> FLASH SALE GIÁNG SINH - KẾT THÚC SAU: 
+                    <div class="timer-box" id="countdown">
+                        <span>02</span> : <span>15</span> : <span>40</span>
+                    </div>
+                </div>
+
+                <div class="slider-container">
+                    <div class="slide active">
+                        <div class="slide-content">
+                            <span style="background:#ffeb3b; color:red; padding:3px 8px; border-radius:15px; font-size:12px; font-weight:bold">BEST SELLER</span>
+                            <h2 class="slide-title">Redmi Note 12 Pro</h2>
+                            <div class="slide-price">4.250.000₫</div>
+                            <p class="slide-desc">Chip Dimensity 1080 | Màn OLED 120Hz<br>Tặng ốp lưng Giáng Sinh</p>
+                            <button class="btn-buy" onclick="addToCart('Redmi Note 12 Pro')"><i class="fas fa-cart-plus"></i> Mua Ngay</button>
+                        </div>
+                        <img src="https://cdn-icons-png.flaticon.com/512/644/644458.png" class="slide-img" alt="Phone">
+                    </div>
+
+                    <div class="slide">
+                        <div class="slide-content">
+                            <span style="background:#fff; color:blue; padding:3px 8px; border-radius:15px; font-size:12px; font-weight:bold">MỚI VỀ</span>
+                            <h2 class="slide-title">iPhone 15 Titan</h2>
+                            <div class="slide-price">19.990.000₫</div>
+                            <p class="slide-desc">Vỏ Titan bền bỉ | Camera 48MP<br>Giảm thêm 500k qua VNPAY</p>
+                            <button class="btn-buy" onclick="addToCart('iPhone 15 Titan')"><i class="fas fa-cart-plus"></i> Đặt Trước</button>
+                        </div>
+                        <img src="https://cdn-icons-png.flaticon.com/512/15/15874.png" class="slide-img" alt="Phone">
+                    </div>
+
+                     <div class="slide">
+                        <div class="slide-content">
+                            <span style="background:#000; color:#fff; padding:3px 8px; border-radius:15px; font-size:12px; font-weight:bold">GAMING</span>
+                            <h2 class="slide-title">Asus ROG Phone 8</h2>
+                            <div class="slide-price">24.500.000₫</div>
+                            <p class="slide-desc">Snapdragon 8 Gen 3 | Led RGB<br>Quà tặng tay cầm chơi game</p>
+                            <button class="btn-buy" onclick="addToCart('ROG Phone 8')"><i class="fas fa-cart-plus"></i> Chiến Ngay</button>
+                        </div>
+                        <img src="https://cdn-icons-png.flaticon.com/512/3437/3437364.png" class="slide-img" alt="Phone">
+                    </div>
+
+                    <div class="slider-nav">
+                        <button class="nav-btn" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <button class="nav-btn" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="right-banners">
+                <div class="banner-box b-blue" onclick="addToCart('Redmi K60 Ultra')">
+                    <h3>Redmi K60 Ultra</h3>
+                    <div style="font-size:20px; font-weight:bold; color:#ffeb3b">8.150K</div>
+                    <p style="font-size:11px">Dimensity 9200+ | 144Hz</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/545/545245.png" alt="">
+                </div>
+                <div class="banner-box b-purple" onclick="addToCart('Xiaomi 14')">
+                    <h3>Xiaomi 14</h3>
+                    <div style="font-size:20px; font-weight:bold; color:#ffeb3b">14.350K</div>
+                    <p style="font-size:11px">Leica Camera | Snap 8 Gen 3</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/610/610365.png" alt="">
+                </div>
+                <div class="banner-box b-dark" onclick="addToCart('Samsung S24 Ultra')">
+                    <h3>S24 Ultra</h3>
+                    <div style="font-size:20px; font-weight:bold; color:#ffeb3b">26.750K</div>
+                    <p style="font-size:11px">Galaxy AI | Zoom 100x</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/3011/3011166.png" alt="">
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. SLIDER LOGIC ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = (index + slides.length) % slides.length; // Loop logic
+            slides[currentSlide].classList.add('active');
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Auto run slider every 4 seconds
+        setInterval(() => { changeSlide(1); }, 4000);
+
+
+        // --- 2. CART LOGIC ---
+        let cartTotal = 0;
+        const cartCountElement = document.getElementById('cartCount');
+
+        function addToCart(productName) {
+            cartTotal++;
+            cartCountElement.innerText = cartTotal;
+            
+            // Animation for badge
+            cartCountElement.style.transform = "scale(1.5)";
+            setTimeout(() => cartCountElement.style.transform = "scale(1)", 200);
+
+            showToast(`Đã thêm <b>${productName}</b> vào giỏ!`, 'success');
+        }
+
+        function showCart() {
+            if(cartTotal === 0) {
+                showToast("Giỏ hàng của bạn đang trống!", "error");
+            } else {
+                alert(`Bạn đang có ${cartTotal} sản phẩm trong giỏ. Chức năng thanh toán đang phát triển!`);
+            }
+        }
+
+
+        // --- 3. TOAST NOTIFICATION ---
+        function showToast(message, type) {
+            const toastArea = document.getElementById('toastArea');
+            const toast = document.createElement('div');
+            toast.classList.add('toast');
+            if(type === 'error') toast.classList.add('error');
+
+            const icon = type === 'error' ? '<i class="fas fa-exclamation-circle" style="color:#dc3545"></i>' : '<i class="fas fa-check-circle" style="color:#28a745"></i>';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            toastArea.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+
+        // --- 4. SEARCH LOGIC ---
+        const searchInput = document.getElementById('searchInput');
+        
+        function handleSearch() {
+            const keyword = searchInput.value.trim();
+            if(keyword) {
+                showToast(`Đang tìm kiếm: "${keyword}"...`, 'success');
+                // Simulate loading
+                setTimeout(() => {
+                    alert(`Đã tìm thấy 5 kết quả cho "${keyword}" (Mô phỏng)`);
+                }, 1000);
+            } else {
+                showToast("Vui lòng nhập tên sản phẩm!", "error");
+                searchInput.focus();
+            }
+        }
+
+        // Enter key to search
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        function filterProduct(cat) {
+            showToast(`Đang lọc sản phẩm: ${cat}`, 'success');
+        }
+
+
+        // --- 5. COUNTDOWN TIMER ---
+        function startCountdown() {
+            const spans = document.querySelectorAll('#countdown span');
+            let hours = 2, minutes = 15, seconds = 40;
+
+            setInterval(() => {
+                seconds--;
+                if (seconds < 0) {
+                    seconds = 59;
+                    minutes--;
+                    if (minutes < 0) {
+                        minutes = 59;
+                        hours--;
+                        if (hours < 0) hours = 2; // Loop back
+                    }
+                }
+                
+                spans[0].innerText = hours.toString().padStart(2, '0');
+                spans[1].innerText = minutes.toString().padStart(2, '0');
+                spans[2].innerText = seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+        startCountdown();
+
+
+        // --- 6. OPTIMIZED SNOW EFFECT ---
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+            
+            const duration = Math.random() * 3 + 2;
+            snowflake.style.animation = `fall ${duration}s linear`;
+
+            document.body.appendChild(snowflake);
+
+            setTimeout(() => snowflake.remove(), duration * 1000);
+        }
+
+        // CSS Keyframes for fall added via JS if not in CSS
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = `@keyframes fall { to { transform: translateY(105vh); } }`;
+        document.head.appendChild(styleSheet);
+
+        setInterval(createSnowflake, 150);
+
+    </script>
+</body>
+</html>

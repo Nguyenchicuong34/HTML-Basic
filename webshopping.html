@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuong Tech - Giáng Sinh Công Nghệ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --xmas-red: #D42426;
+            --xmas-green: #145C32;
+            --xmas-gold: #F8B229;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --dark-text: #2D3436;
+            --primary-font: 'Quicksand', sans-serif;
+            --header-font: 'Mountains of Christmas', cursive;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--primary-font);
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); /* Màu lễ hội ấm áp */
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            color: var(--dark-text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Header --- */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 4px solid var(--xmas-green);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-family: var(--header-font);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--xmas-red);
+            text-shadow: 1px 1px 0px var(--xmas-green);
+            cursor: pointer;
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 20px; }
+        .menu-btn {
+            font-weight: 800; color: var(--xmas-green); cursor: pointer;
+            padding: 8px 15px; border: 2px solid var(--xmas-green); border-radius: 8px;
+            transition: 0.3s;
+        }
+        .menu-btn:hover { background: var(--xmas-green); color: white; }
+
+        .search-wrap input {
+            padding: 12px 20px; border-radius: 25px; border: 2px solid #ddd;
+            width: 300px; outline: none; font-family: var(--primary-font);
+        }
+        .search-wrap input:focus { border-color: var(--xmas-red); }
+
+        .user-nav button {
+            background: transparent; border: none; font-weight: 700;
+            font-family: var(--primary-font); font-size: 16px; cursor: pointer;
+            margin-left: 20px; padding: 10px 20px; border-radius: 25px; transition: 0.3s;
+        }
+
+        .btn-login { color: var(--dark-text); }
+        .btn-login:hover { color: var(--xmas-red); text-decoration: underline; }
+
+        .btn-cart { background: var(--xmas-red) !important; color: white; box-shadow: 0 4px 10px rgba(212, 36, 38, 0.3); }
+        .btn-cart:hover { background: var(--xmas-green) !important; transform: translateY(-2px); }
+
+        /* --- Sidebar Menu (Thay thế icon 3 gạch) --- */
+        .sidebar {
+            position: fixed; left: -300px; top: 0; width: 300px; height: 100%;
+            background: white; z-index: 2000; transition: 0.4s;
+            padding: 30px; box-shadow: 5px 0 20px rgba(0,0,0,0.2);
+            border-right: 5px solid var(--xmas-red);
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-header {
+            font-family: var(--header-font); font-size: 28px; color: var(--xmas-red);
+            margin-bottom: 30px; border-bottom: 2px dashed #ddd; padding-bottom: 10px;
+        }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 15px; }
+        .sidebar a {
+            text-decoration: none; color: #333; font-weight: 700; font-size: 18px;
+            display: block; padding: 10px; border-radius: 8px; transition: 0.2s;
+        }
+        .sidebar a:hover { background: #fee; color: var(--xmas-red); padding-left: 15px; }
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1999; display: none;
+        }
+
+        /* --- Main Content --- */
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; display: flex; gap: 30px; }
+        
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            border-radius: 20px; padding: 40px; margin-bottom: 40px;
+            text-align: center; border: 2px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .hero h1 {
+            font-family: var(--header-font); font-size: 60px; color: var(--xmas-red);
+            margin-bottom: 10px; line-height: 1.2;
+        }
+        .hero p { font-size: 20px; color: var(--xmas-green); font-weight: bold; }
+
+        /* Product Grid */
+        .grid-area { flex: 3; }
+        .products {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;
+        }
+
+        .card {
+            background: var(--glass-bg); border-radius: 20px; padding: 20px;
+            border: 1px solid var(--glass-border); transition: 0.4s;
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+
+        .img-box {
+            height: 280px; width: 100%; overflow: hidden; border-radius: 15px;
+            background: white; margin-bottom: 15px; display: flex; align-items: center; justify-content: center;
+        }
+        .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; transition: 0.5s; }
+        .card:hover .img-box img { transform: scale(1.1); }
+
+        .info h3 {
+            font-size: 20px; margin-bottom: 8px; color: var(--dark-text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .price { color: var(--xmas-red); font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+        .rating { color: var(--xmas-gold); margin-bottom: 15px; font-weight: bold; font-size: 14px; }
+
+        .actions { margin-top: auto; display: flex; gap: 10px; }
+        .btn-view {
+            flex: 1; background: white; border: 2px solid #ddd; padding: 10px;
+            border-radius: 10px; cursor: pointer; font-weight: 700;
+        }
+        .btn-add {
+            flex: 2; background: var(--xmas-green); color: white; border: none;
+            padding: 10px; border-radius: 10px; cursor: pointer; font-weight: 700;
+            transition: 0.3s;
+        }
+        .btn-add:hover { background: #0f4224; }
+
+        /* Sidebar Cart */
+        .cart-sidebar {
+            flex: 1; max-width: 350px; background: rgba(255, 255, 255, 0.95);
+            padding: 25px; border-radius: 20px; height: fit-content;
+            position: sticky; top: 100px;
+            border-top: 8px solid var(--xmas-red);
+        }
+
+        /* Modal Details */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 3000; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; width: 900px; max-width: 95%; display: flex;
+            border-radius: 25px; overflow: hidden; animation: zoomIn 0.3s;
+        }
+        @keyframes zoomIn { from {transform: scale(0.8); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+        
+        .modal-img { flex: 1; background: #f0f0f0; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-img img { max-width: 100%; max-height: 400px; }
+        
+        .modal-info { flex: 1.2; padding: 40px; position: relative; }
+        .close-txt {
+            position: absolute; right: 20px; top: 20px; cursor: pointer;
+            font-weight: 800; color: #999; border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px;
+        }
+        .close-txt:hover { color: var(--xmas-red); border-color: var(--xmas-red); }
+
+        .specs-table {
+            width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;
+        }
+        .specs-table td { padding: 8px; border-bottom: 1px solid #eee; }
+        .specs-table td:first-child { font-weight: bold; color: #666; width: 40%; }
+
+        /* Animation Elements */
+        .santa-fly {
+            position: fixed; top: 10%; z-index: 500; width: 300px;
+            animation: flyAcross 20s linear infinite; pointer-events: none;
+        }
+        @keyframes flyAcross {
+            from { transform: translateX(-400px) translateY(0); }
+            to { transform: translateX(110vw) translateY(-50px); }
+        }
+        .snowflake {
+            position: fixed; color: #fff; font-size: 20px;
+            top: -20px; animation: fall linear infinite; z-index: 999; pointer-events: none;
+        }
+        @keyframes fall { to { transform: translateY(110vh); } }
+
+        /* Responsive */
+        @media(max-width: 900px) {
+            .container { flex-direction: column; }
+            .cart-sidebar { max-width: 100%; position: static; }
+            .modal-content { flex-direction: column; height: 90vh; overflow-y: auto; }
+            .modal-img { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <img src="image_4a9d92.png" class="santa-fly" alt="Santa Claus">
+    <div id="snow-container"></div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">DANH MỤC SHOP</div>
+        <ul>
+            <li><a href="#">TRANG CHỦ</a></li>
+            <li><a href="#">ĐIỆN THOẠI CAO CẤP</a></li>
+            <li><a href="#">ĐIỆN THOẠI GẬP</a></li>
+            <li><a href="#">FLASH SALE NOEL</a></li>
+            <li><a href="#">TIN CÔNG NGHỆ</a></li>
+            <li style="margin-top: 50px; text-align: center; color: #999; font-size: 14px;">[ ĐÓNG MENU ]</li>
+        </ul>
+    </div>
+
+    <header>
+        <div class="nav-left">
+            <div class="menu-btn" onclick="toggleMenu()">DANH MỤC</div>
+            <div class="logo">Cuong Tech</div>
+        </div>
+        
+        <div class="search-wrap">
+            <input type="text" placeholder="Tìm kiếm siêu phẩm công nghệ...">
+        </div>
+
+        <div class="user-nav">
+            <button class="btn-login" onclick="alert('Tính năng đang phát triển!')">ĐĂNG NHẬP</button>
+            <button class="btn-cart">
+                GIỎ HÀNG (<span id="cart-count">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="grid-area">
+            <div class="hero">
+                <h1>Giáng Sinh Công Nghệ</h1>
+                <p>🎄 Săn Sale Smartphone - Nhận Quà Cực Chất 🎄</p>
+            </div>
+
+            <div class="products" id="product-list">
+                </div>
+        </div>
+
+        <div class="cart-sidebar">
+            <h2 style="font-family: var(--header-font); color: var(--xmas-red); margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                Giỏ Hàng Của Bạn
+            </h2>
+            <div id="cart-items" style="min-height: 100px; color: #666; font-size: 14px;">
+                Chưa có sản phẩm nào...
+            </div>
+            <div style="margin-top: 20px; font-weight: 800; font-size: 18px; display: flex; justify-content: space-between;">
+                <span>Tổng cộng:</span>
+                <span id="total-price" style="color: var(--xmas-red);">0 đ</span>
+            </div>
+            <button style="width: 100%; background: var(--dark-text); color: white; padding: 15px; border: none; border-radius: 10px; margin-top: 20px; font-weight: bold; cursor: pointer;" onclick="checkout()">
+                THANH TOÁN NGAY
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-img">
+                <img id="modal-img-src" src="" alt="Product Detail">
+            </div>
+            <div class="modal-info">
+                <span class="close-txt" onclick="closeModal()">[ ĐÓNG ]</span>
+                <h2 id="modal-title" style="font-size: 32px; color: var(--dark-text); margin-bottom: 10px;">Title</h2>
+                <div style="color: var(--xmas-red); font-size: 28px; font-weight: 800; margin-bottom: 20px;" id="modal-price">Price</div>
+                
+                <p id="modal-desc" style="line-height: 1.6; color: #555;">Description</p>
+                
+                <table class="specs-table">
+                    <tbody id="modal-specs">
+                        </tbody>
+                </table>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button class="btn-add" id="modal-add-btn" style="font-size: 18px; padding: 15px;">THÊM VÀO GIỎ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Dữ liệu sản phẩm từ hình ảnh bạn cung cấp ---
+        const products = [
+            {
+                id: 1,
+                name: "Oppo Reno14 Pro 5G",
+                price: 12990000,
+                image: "image_4a9190.png",
+                rating: "4.9/5 ★★★★★",
+                desc: "Chuyên gia chân dung AI thế hệ mới. Thiết kế mặt lưng dòng chảy độc đáo.",
+                specs: ["Màn hình: 6.7 inch AMOLED 120Hz", "Chip: Dimensity 8200", "Camera: 50MP OIS", "Pin: 5000mAh, Sạc 80W"]
+            },
+            {
+                id: 2,
+                name: "iPhone 15 Pro Max (Rose Gold)",
+                price: 34500000,
+                image: "image_4a91f1.png",
+                rating: "5.0/5 ★★★★★",
+                desc: "Phiên bản màu hồng giới hạn cực hiếm. Khung viền Titan sang trọng.",
+                specs: ["Màn hình: 6.7 inch Super Retina XDR", "Chip: A17 Pro", "Bộ nhớ: 512GB", "Camera: Zoom quang 5x"]
+            },
+            {
+                id: 3,
+                name: "Redmi Note 13 Pro+ Series",
+                price: 8990000,
+                image: "image_4a91ec.png",
+                rating: "4.7/5 ★★★★☆",
+                desc: "Bộ sưu tập màu sắc đa dạng. Camera 200MP đột phá phân khúc.",
+                specs: ["Màn hình: Cong 1.5K", "Chip: Dimensity 7200 Ultra", "Camera: 200MP", "Chống nước: IP68"]
+            },
+            {
+                id: 4,
+                name: "Oppo Find N3 Flip (Vàng)",
+                price: 22990000,
+                image: "image_4a91d0.png",
+                rating: "4.8/5 ★★★★★",
+                desc: "Điện thoại gập vỏ sò thời thượng với cụm camera tròn đẳng cấp.",
+                specs: ["Màn hình chính: 6.8 inch", "Màn hình phụ: 3.26 inch", "Camera: Hasselblad", "Gập mở: 400.000 lần"]
+            },
+            {
+                id: 5,
+                name: "Vivo X100 & Moto Edge",
+                price: 15990000,
+                image: "image_4a91b4.png",
+                rating: "4.6/5 ★★★★☆",
+                desc: "Những siêu phẩm thiết kế cụm camera tròn hầm hố và màn hình tràn viền.",
+                specs: ["Chip: Snapdragon 8 Gen 3", "Màn hình: LTPO 144Hz", "Sạc nhanh: 120W", "Âm thanh: Loa kép Dolby"]
+            },
+            {
+                id: 6,
+                name: "Samsung Galaxy S24 FE (Đa màu)",
+                price: 16990000,
+                image: "image_4a920c.png",
+                rating: "4.8/5 ★★★★★",
+                desc: "Phiên bản Fan Edition với nhiều màu sắc trẻ trung: Tím, Xanh Mint, Trắng.",
+                specs: ["Chip: Exynos 2400e", "Màn hình: Dynamic AMOLED 2X", "AI: Galaxy AI tích hợp", "Pin: 4700mAh"]
+            },
+            {
+                id: 7,
+                name: "Nubia Z60 Ultra (Xanh Rừng)",
+                price: 19490000,
+                image: "image_4a9210.png",
+                rating: "4.9/5 ★★★★★",
+                desc: "Thiết kế vuông vức nam tính, màn hình vô khuyết camera ẩn.",
+                specs: ["Màn hình: UDC thế hệ 5", "Chip: Snapdragon 8 Gen 3", "Pin: 6000mAh", "Camera: 35mm chuyên dụng"]
+            },
+            {
+                id: 8,
+                name: "Pixel Fold & OnePlus Open",
+                price: 38990000,
+                image: "image_4a922d.png",
+                rating: "4.7/5 ★★★★★",
+                desc: "Bộ đôi điện thoại gập ngang đỉnh cao nhất thế giới Android hiện nay.",
+                specs: ["Cơ chế bản lề: Giọt nước", "Đa nhiệm: 3 ứng dụng", "Camera: Đỉnh cao nhiếp ảnh", "Màn hình: OLED dẻo"]
+            },
+            {
+                id: 9,
+                name: "iPhone 16 Ultra (Concept Orange)",
+                price: 40990000,
+                image: "image_4a9269.png",
+                rating: "5.0/5 ★★★★★",
+                desc: "Phiên bản Concept màu cam độc đáo với cụm camera thiết kế mới lạ.",
+                specs: ["Vỏ: Titan Grade 5", "Chip: A18 Pro", "Nút bấm: Action Button mới", "Màn hình: Micro-LED"]
+            },
+            {
+                id: 10,
+                name: "Oppo Reno 11 (Tím Khói)",
+                price: 10490000,
+                image: "image_4a9198.png",
+                rating: "4.7/5 ★★★★☆",
+                desc: "Màu tím khói họa tiết lông vũ cực kỳ nịnh mắt cho mùa lễ hội.",
+                specs: ["Màn hình: 120Hz 1 tỷ màu", "Camera: Chân dung Tele 32MP", "Sạc nhanh: SuperVOOC 67W", "Thiết kế: Mỏng nhẹ"]
+            }
+        ];
+
+        // --- 2. Xử lý Logic ---
+        
+        // Render sản phẩm
+        const productList = document.getElementById('product-list');
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="img-box">
+                    <img src="${p.image}" alt="${p.name}">
+                </div>
+                <div class="info">
+                    <h3>${p.name}</h3>
+                    <div class="rating">${p.rating}</div>
+                    <div class="price">${p.price.toLocaleString()} đ</div>
+                    <div class="actions">
+                        <button class="btn-view" onclick="viewDetail(${p.id})">XEM</button>
+                        <button class="btn-add" onclick="addToCart(${p.id})">MUA NGAY</button>
+                    </div>
+                </div>
+            `;
+            productList.appendChild(card);
+        });
+
+        // Giỏ hàng
+        let cart = [];
+        
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            cart.push(p);
+            updateCart();
+            
+            // Hiệu ứng tuyết rơi nhẹ khi mua hàng
+            createSnow(5);
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const cartDiv = document.getElementById('cart-items');
+            const totalDiv = document.getElementById('total-price');
+            
+            if (cart.length === 0) {
+                cartDiv.innerHTML = "Chưa có sản phẩm nào...";
+                totalDiv.innerText = "0 đ";
+                return;
+            }
+
+            let total = 0;
+            let html = '<ul style="list-style: none;">';
+            cart.forEach((item, index) => {
+                total += item.price;
+                html += `<li style="margin-bottom: 10px; border-bottom: 1px dashed #ddd; padding-bottom: 5px;">
+                            <div style="font-weight:bold">${item.name}</div>
+                            <div style="display:flex; justify-content:space-between">
+                                <span>${item.price.toLocaleString()}đ</span>
+                                <span style="cursor:pointer; color:red; font-weight:bold" onclick="removeItem(${index})">[Xóa]</span>
+                            </div>
+                         </li>`;
+            });
+            html += '</ul>';
+            cartDiv.innerHTML = html;
+            totalDiv.innerText = total.toLocaleString() + ' đ';
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function checkout() {
+            if(cart.length === 0) alert("Giỏ hàng trống!");
+            else {
+                alert("Đơn hàng của bạn đã được ghi nhận! Ông già Noel sẽ giao hàng sớm. 🎅");
+                cart = [];
+                updateCart();
+            }
+        }
+
+        // Modal Details
+        function viewDetail(id) {
+            const p = products.find(x => x.id === id);
+            document.getElementById('modal-img-src').src = p.image;
+            document.getElementById('modal-title').innerText = p.name;
+            document.getElementById('modal-price').innerText = p.price.toLocaleString() + ' đ';
+            document.getElementById('modal-desc').innerText = p.desc;
+            
+            let specsHtml = '';
+            p.specs.forEach(s => {
+                let parts = s.split(':');
+                specsHtml += `<tr><td>${parts[0]}</td><td>${parts[1] || ''}</td></tr>`;
+            });
+            document.getElementById('modal-specs').innerHTML = specsHtml;
+            
+            document.getElementById('modal-add-btn').onclick = function() {
+                addToCart(p.id);
+                closeModal();
+            }
+
+            document.getElementById('productModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        // Sidebar Menu
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Hiệu ứng tuyết rơi
+        function createSnow(amount = 1) {
+            const container = document.getElementById('snow-container');
+            for(let i=0; i<amount; i++) {
+                const snow = document.createElement('div');
+                snow.innerText = '❄'; // Dùng ký tự thay cho icon
+                snow.className = 'snowflake';
+                snow.style.left = Math.random() * 100 + 'vw';
+                snow.style.animationDuration = Math.random() * 3 + 2 + 's';
+                snow.style.opacity = Math.random();
+                container.appendChild(snow);
+                setTimeout(() => snow.remove(), 5000);
+            }
+        }
+        setInterval(() => createSnow(1), 300);
+
+    </script>
+</body>
+</html>

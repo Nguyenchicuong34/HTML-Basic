@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giáng Sinh Vui Vẻ </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #020205; /* Đen xanh thẫm */
+            font-family: 'Mountains of Christmas', cursive;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100vh;
+            display: block;
+        }
+
+        #greeting-overlay {
+            position: absolute;
+            top: 5%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 4rem;
+            margin: 0;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 40px #ff8800,
+                0 0 80px #ff8800;
+            animation: glow 1.5s ease-in-out infinite alternate;
+            letter-spacing: 2px;
+        }
+
+        p {
+            color: #ffd700;
+            font-size: 1.8rem;
+            margin-top: 15px;
+            text-shadow: 0 0 10px #ffaa00;
+            font-weight: bold;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            transition: opacity 0.5s;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+                transform: scale(1);
+            }
+            to {
+                text-shadow: 0 0 20px #ff0000, 0 0 40px #ff8800, 0 0 60px #ff8800;
+                transform: scale(1.02);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            p { font-size: 1.2rem; }
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="loading">Đang trang trí cây thông...</div>
+
+    <div id="greeting-overlay">
+        <h1>Noel vui vẻ  !</h1>
+        <p>✨  Merry Christmas & Good Luck  ✨</p>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Scene & Camera ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x020205, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 12, 40); // Góc nhìn rộng hơn
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 - 0.05;
+        controls.minDistance = 15;
+        controls.maxDistance = 60;
+        controls.autoRotate = true; // Tự động xoay nhẹ
+        controls.autoRotateSpeed = 0.5;
+
+        // --- Ánh sáng lung linh ---
+        const ambientLight = new THREE.AmbientLight(0x222222, 1); // Tối hơn để đèn nổi bật
+        scene.add(ambientLight);
+
+        const moonLight = new THREE.DirectionalLight(0xaaccff, 0.5);
+        moonLight.position.set(20, 50, 20);
+        moonLight.castShadow = true;
+        scene.add(moonLight);
+
+        // Đèn chiếu vào cây để làm nổi bật màu xanh
+        const spotLight = new THREE.SpotLight(0xffffff, 5);
+        spotLight.position.set(10, 30, 20);
+        spotLight.angle = Math.PI / 6;
+        spotLight.penumbra = 0.5;
+        spotLight.castShadow = true;
+        scene.add(spotLight);
+
+        // --- Sàn tuyết ---
+        const groundGeo = new THREE.PlaneGeometry(200, 200, 64, 64);
+        // Tạo độ lồi lõm cho tuyết
+        const posAttribute = groundGeo.attributes.position;
+        for (let i = 0; i < posAttribute.count; i++) {
+            const z = posAttribute.getZ(i);
+            // Làm nhấp nhô ngẫu nhiên
+            posAttribute.setZ(i, z + Math.random() * 1.5);
+        }
+        groundGeo.computeVertexNormals();
+
+        const groundMat = new THREE.MeshStandardMaterial({ 
+            color: 0xffffff, 
+            roughness: 0.9,
+            metalness: 0.1
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // --- CÂY THÔNG CHÍNH (Group) ---
+        const treeGroup = new THREE.Group();
+        scene.add(treeGroup);
+
+        // Danh sách các đèn để animate
+        const animatedLights = []; 
+
+        function createMajesticTree() {
+            // Thân cây to
+            const trunkGeo = new THREE.CylinderGeometry(2, 3, 6, 12);
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x3d2817, roughness: 1 });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = 3;
+            trunk.castShadow = true;
+            treeGroup.add(trunk);
+
+            // Lá cây: Sử dụng nhiều tầng nón xếp chồng lên nhau dày đặc
+            const treeMat = new THREE.MeshStandardMaterial({ 
+                color: 0x004400, // Xanh đậm hơn
+                roughness: 0.7,
+                flatShading: true
+            });
+
+            const layers = 8; // Tăng số tầng
+            const startY = 4;
+            
+            for(let i = 0; i < layers; i++) {
+                const t = i / layers;
+                const radius = 9 * (1 - t) + 1; // Bán kính đáy giảm dần
+                const height = 5;
+                const y = startY + i * 2.5;
+
+                // Mỗi tầng là một hình nón
+                const coneGeo = new THREE.ConeGeometry(radius, height, 32);
+                const cone = new THREE.Mesh(coneGeo, treeMat);
+                cone.position.y = y;
+                cone.castShadow = true;
+                cone.receiveShadow = true;
+                
+                // Thêm chút ngẫu nhiên cho cây tự nhiên
+                cone.scale.set(1 + Math.random()*0.1, 1, 1 + Math.random()*0.1);
+                
+                treeGroup.add(cone);
+                
+                // Thêm quả châu ngay trên tầng lá này
+                addOrnaments(y - height/2 + 0.5, radius, i);
+            }
+
+            // --- NGÔI SAO ĐỈNH ---
+            const starGeo = new THREE.OctahedronGeometry(1.5, 0);
+            const starMat = new THREE.MeshStandardMaterial({ 
+                color: 0xffd700, 
+                emissive: 0xffd700,
+                emissiveIntensity: 0.8,
+                roughness: 0.2,
+                metalness: 1
+            });
+            const star = new THREE.Mesh(starGeo, starMat);
+            const topY = startY + layers * 2.5;
+            star.position.y = topY;
+            
+            const starLight = new THREE.PointLight(0xffd700, 2, 20);
+            star.add(starLight);
+            treeGroup.add(star);
+
+            // Animate sao quay
+            const animateStar = () => {
+                requestAnimationFrame(animateStar);
+                star.rotation.y -= 0.02;
+                star.rotation.z = Math.sin(Date.now() * 0.002) * 0.2;
+            };
+            animateStar();
+
+            // --- DÂY ĐÈN LED XOẮN ỐC ---
+            createFairyLights(startY, topY, 9);
+        }
+
+        // Tạo dây đèn cuốn quanh cây
+        function createFairyLights(minY, maxY, maxRadius) {
+            const pointsCount = 100; // Số lượng đèn
+            const coils = 6; // Số vòng cuốn
+            
+            for (let i = 0; i < pointsCount; i++) {
+                const t = i / pointsCount; // 0 -> 1
+                const angle = t * Math.PI * 2 * coils;
+                const y = minY + t * (maxY - minY - 1); // Trừ 1 để không chạm ngôi sao
+                const currentRadius = maxRadius * (1 - t) + 0.5; // Thu nhỏ dần lên đỉnh
+
+                const x = Math.cos(angle) * (currentRadius + 0.2); // +0.2 để đèn nổi trên lá
+                const z = Math.sin(angle) * (currentRadius + 0.2);
+
+                const bulbGeo = new THREE.SphereGeometry(0.25, 8, 8);
+                
+                // Màu ngẫu nhiên cho đèn
+                const hue = Math.random(); 
+                const color = new THREE.Color().setHSL(hue, 1, 0.5);
+                
+                const bulbMat = new THREE.MeshStandardMaterial({
+                    color: color,
+                    emissive: color,
+                    emissiveIntensity: 1
+                });
+
+                const bulb = new THREE.Mesh(bulbGeo, bulbMat);
+                bulb.position.set(x, y, z);
+                treeGroup.add(bulb);
+
+                // Lưu lại để nhấp nháy
+                animatedLights.push({
+                    mesh: bulb,
+                    baseColor: color,
+                    speed: 2 + Math.random() * 3,
+                    offset: Math.random() * 10
+                });
+            }
+        }
+
+        // Tạo quả châu (Ornaments)
+        function addOrnaments(y, radius, level) {
+            const count = Math.floor(radius * 2.5); 
+            for(let i = 0; i < count; i++) {
+                const angle = (i / count) * Math.PI * 2 + Math.random();
+                const r = radius * 0.85; // Thụt vào trong một chút
+                const x = Math.cos(angle) * r;
+                const z = Math.sin(angle) * r;
+
+                const geo = new THREE.SphereGeometry(0.4, 16, 16);
+                const mat = new THREE.MeshStandardMaterial({
+                    color: Math.random() > 0.5 ? 0xff0000 : 0xccaaff, // Đỏ hoặc Bạc
+                    metalness: 0.9,
+                    roughness: 0.1
+                });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(x, y - Math.random(), z); // Treo lơ lửng ngẫu nhiên
+                treeGroup.add(mesh);
+            }
+        }
+
+        // --- HỘP QUÀ CÓ NƠ ---
+        function createLuxuryGifts() {
+            const colors = [0xff0000, 0x008800, 0x0000ff, 0xffd700, 0xff00aa];
+            
+            for(let i = 0; i < 20; i++) {
+                const group = new THREE.Group();
+                const size = 1.2 + Math.random();
+                
+                // Hộp
+                const boxGeo = new THREE.BoxGeometry(size, size, size);
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const boxMat = new THREE.MeshStandardMaterial({ color: color });
+                const box = new THREE.Mesh(boxGeo, boxMat);
+                box.castShadow = true;
+                group.add(box);
+
+                // Nơ dọc
+                const ribbonMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x333333 });
+                const ribbonV = new THREE.Mesh(new THREE.BoxGeometry(size * 0.2, size + 0.1, size + 0.1), ribbonMat);
+                group.add(ribbonV);
+
+                // Nơ ngang
+                const ribbonH = new THREE.Mesh(new THREE.BoxGeometry(size + 0.1, size * 0.2, size + 0.1), ribbonMat);
+                group.add(ribbonH);
+
+                // Đặt vị trí
+                const angle = Math.random() * Math.PI * 2;
+                const rad = 4 + Math.random() * 8;
+                group.position.set(Math.cos(angle) * rad, size/2, Math.sin(angle) * rad);
+                group.rotation.y = Math.random();
+
+                treeGroup.add(group);
+            }
+        }
+
+        // --- HẠT BỤI TIÊN (Magic Dust) ---
+        let dustSystem;
+        function createMagicDust() {
+            const count = 500;
+            const geo = new THREE.BufferGeometry();
+            const pos = [];
+            
+            for(let i=0; i<count; i++) {
+                const r = 15 * Math.random() + 2;
+                const theta = Math.random() * Math.PI * 2;
+                const y = Math.random() * 25;
+                
+                pos.push(
+                    r * Math.cos(theta),
+                    y,
+                    r * Math.sin(theta)
+                );
+            }
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            
+            const mat = new THREE.PointsMaterial({
+                color: 0xffffaa,
+                size: 0.3,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+            
+            dustSystem = new THREE.Points(geo, mat);
+            scene.add(dustSystem);
+        }
+
+        // --- TUYẾT RƠI (Nâng cấp) ---
+        let snowSystem;
+        function createSnow() {
+            const count = 3000;
+            const geo = new THREE.BufferGeometry();
+            const pos = [];
+            const vels = [];
+            
+            for(let i=0; i<count; i++) {
+                pos.push((Math.random()-0.5)*100, Math.random()*60, (Math.random()-0.5)*100);
+                vels.push((Math.random()-0.5)*0.2, -(Math.random()*0.2+0.1), (Math.random()-0.5)*0.2);
+            }
+            
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            
+            // Texture bông tuyết đơn giản
+            const canvas = document.createElement('canvas');
+            canvas.width=32; canvas.height=32;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.beginPath(); ctx.arc(16,16,10,0,Math.PI*2); ctx.fill();
+            const tex = new THREE.CanvasTexture(canvas);
+
+            const mat = new THREE.PointsMaterial({
+                color: 0xffffff, size: 0.5, map: tex, 
+                transparent: true, opacity: 0.9, depthWrite: false
+            });
+            
+            snowSystem = new THREE.Points(geo, mat);
+            snowSystem.userData = { vels: vels };
+            scene.add(snowSystem);
+        }
+
+        // --- KHỞI CHẠY ---
+        createMajesticTree();
+        createLuxuryGifts();
+        createMagicDust();
+        createSnow();
+        
+        document.getElementById('loading').style.display = 'none';
+
+        // --- ANIMATION ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+            
+            controls.update();
+
+            // 1. Đèn nhấp nháy 7 màu
+            animatedLights.forEach(light => {
+                const intensity = (Math.sin(time * light.speed + light.offset) + 1) * 0.5 + 0.5;
+                light.mesh.material.emissiveIntensity = intensity;
+                // Đổi màu nhẹ theo thời gian
+                const hsl = {};
+                light.baseColor.getHSL(hsl);
+                light.mesh.material.color.setHSL((hsl.h + time * 0.1) % 1, hsl.s, hsl.l);
+                light.mesh.material.emissive.setHSL((hsl.h + time * 0.1) % 1, hsl.s, hsl.l);
+            });
+
+            // 2. Tuyết rơi
+            const sPos = snowSystem.geometry.attributes.position.array;
+            const sVels = snowSystem.userData.vels;
+            for(let i=0; i<sPos.length/3; i++) {
+                sPos[i*3+1] += sVels[i*3+1]; // Y giảm
+                sPos[i*3] += Math.sin(time + i) * 0.02; // Gió đưa nhẹ
+                
+                if(sPos[i*3+1] < 0) {
+                    sPos[i*3+1] = 60;
+                    sPos[i*3] = (Math.random()-0.5)*100;
+                    sPos[i*3+2] = (Math.random()-0.5)*100;
+                }
+            }
+            snowSystem.geometry.attributes.position.needsUpdate = true;
+
+            // 3. Bụi tiên bay lên xoắn ốc
+            dustSystem.rotation.y = time * 0.1;
+            const dPos = dustSystem.geometry.attributes.position.array;
+            for(let i=0; i<dPos.length/3; i++) {
+                dPos[i*3+1] += 0.05; // Bay lên
+                if(dPos[i*3+1] > 25) dPos[i*3+1] = 0;
+            }
+            dustSystem.geometry.attributes.position.needsUpdate = true;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
